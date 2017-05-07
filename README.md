@@ -1,4 +1,4 @@
-# VDEPLUG\_CAP
+# VDEPLUG\_PCAP
 
 *A pcap plugin for vdeplug4*
 
@@ -8,7 +8,7 @@ is sent to the client.
 
 Please notice that the pcap library captures and injects packets on the net, packets sent by the host are not captured,
 injected packets are not received by the host.
-So several clients using *libvdeplug\_pcap* on the same interface of the same host do not communicate (nor they communicate
+So several clients using *libvdeplug\_pcap* on the same interface of the same host do not communicate among them (nor they communicate
 with the host).
 
 This module of libvdeplug4 can be used in any program supporting vde like

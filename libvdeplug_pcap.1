@@ -5,12 +5,12 @@ libvdeplug_pcap - vdeplug module for vde_switch based networks
 libvdeplug_pcap.so
 .SH DESCRIPTION
 This libvdeplug module interconnects a client to an interface using the packet capture library
-(pcap): all the data that is received by this plug is injected into interface and everything captured from that interface 
+(pcap): all the data that is received by this plug is injected into interface and everything captured from that interface
 is sent to the client.
 
 Please notice that the pcap library captures and injects packets on the net, packets sent by the host are not captured,
 injected packets are not received by the host.
-So several clients using libvdeplug_pcap on the same interface of the same host do not communicate (nor they communicate
+So several clients using libvdeplug_pcap on the same interface of the same host do not communicate among them (nor they communicate
 with the host).
 
 This module of libvdeplug4 can be used in any program supporting vde like
