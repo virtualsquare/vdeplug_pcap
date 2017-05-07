@@ -14,9 +14,9 @@ with the host).
 This module of libvdeplug4 can be used in any program supporting vde like
 *vde\_plug*, *kvm*, *qemu*, *user-mode-linux*, *virtualbox*, *vdens*, programs using *vdestack*, etc.
 
-## Install *vdeplug\_cap*
+## Install *vdeplug\_pcap*
 
-*vdeplug\_cap* uses the auto-tools, so the standard procedure to compile and install the library is:
+*vdeplug\_pcap* uses the auto-tools, so the standard procedure to compile and install the library is:
 ```
 $ autoreconf -if
 $ ./configure
