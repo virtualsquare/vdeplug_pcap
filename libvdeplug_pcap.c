@@ -28,6 +28,11 @@
 #include <libvdeplug.h>
 #include <errno.h>
 #include <sys/eventfd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/ioctl.h>
+#include <net/if.h>
+#include <net/ethernet.h>
 #include "libvdeplug_mod.h"
 #include <pcap.h>
 
@@ -53,7 +58,23 @@ struct vde_pcap_conn {
 	pcap_t *pcap;
 	int fddata;
 	char errbuf[PCAP_ERRBUF_SIZE];
+	char hwaddr[ETH_ALEN];
 };
+
+static void gethwaddr(const char *ifname, char *hwaddr) {
+	int s;
+	int ioctlok;
+	struct ifreq ifr;
+	strncpy(ifr.ifr_name, ifname, sizeof(ifr.ifr_name));
+	if ((s = socket(AF_INET, SOCK_DGRAM, 0)) > 0) {
+		ioctlok = ioctl(s, SIOCGIFHWADDR, &ifr);
+		close(s);
+	}
+	if (s < 0 || ioctlok < 0)
+		memset(hwaddr, 0, ETH_ALEN);
+	else
+		memcpy(hwaddr, &ifr.ifr_hwaddr.sa_data, ETH_ALEN);
+}
 
 static VDECONN *vde_pcap_open(char *given_vde_url, char *descr,int interface_version,
 		struct vde_open_args *open_args)
@@ -75,6 +96,7 @@ static VDECONN *vde_pcap_open(char *given_vde_url, char *descr,int interface_ver
 	}
 
 	newconn->fddata=pcap_get_selectable_fd(newconn->pcap);
+	gethwaddr(ifname, newconn->hwaddr);
 	pcap_setnonblock(newconn->pcap, 1, newconn->errbuf);
 
 	return (VDECONN *)newconn;
@@ -90,8 +112,13 @@ static ssize_t vde_pcap_recv(VDECONN *conn,void *buf,size_t len,int flags)
 	struct pcap_pkthdr hdr;
 	if ((data = pcap_next(vde_conn->pcap, &hdr)) != NULL) {
 		ssize_t minlen = (hdr.len <= len) ? hdr.len : len;
-		memcpy(buf, data, minlen);
-		return minlen;
+		struct ether_header *ethh = (void *) data;
+		if (__builtin_expect(memcmp(ethh->ether_shost, vde_conn->hwaddr, ETH_ALEN) == 0, 0))
+			return 1;
+		else {
+			memcpy(buf, data, minlen);
+			return minlen;
+		}
 	} else
 		return 1;
 }
