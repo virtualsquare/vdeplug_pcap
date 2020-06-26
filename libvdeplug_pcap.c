@@ -86,21 +86,37 @@ static VDECONN *vde_pcap_open(char *given_vde_url, char *descr,int interface_ver
 		return NULL;
 	}
 
-	newconn->pcap = pcap_open_live(ifname, VDE_ETHBUFSIZE, 1, 0, newconn->errbuf);
+	newconn->pcap = pcap_create(ifname, newconn->errbuf);
 	if (newconn->pcap == NULL)
 		goto abort;
+
+
+	if (pcap_set_snaplen(newconn->pcap, VDE_ETHBUFSIZE) != 0)
+		goto abort;
+	if (pcap_set_promisc(newconn->pcap, 1) != 0)
+		goto abort;
+#if 0
+	if (pcap_set_timeout(newconn->pcap, 1) != 0)
+		goto abort;
+#endif
+	if (pcap_set_immediate_mode(newconn->pcap, 1) != 0)
+		goto abort;
+	if (pcap_activate(newconn->pcap) != 0)
+		goto abort;
+	if (pcap_setnonblock(newconn->pcap, 1, newconn->errbuf) != 0)
+		goto abort;
+	newconn->fddata=pcap_get_selectable_fd(newconn->pcap);
 
 	if (pcap_datalink(newconn->pcap) != DLT_EN10MB ) {
 		errno = EINVAL;
 		goto abort;
 	}
 
-	newconn->fddata=pcap_get_selectable_fd(newconn->pcap);
 	gethwaddr(ifname, newconn->hwaddr);
-	pcap_setnonblock(newconn->pcap, 1, newconn->errbuf);
-
 	return (VDECONN *)newconn;
 abort:
+	if (newconn->pcap != NULL)
+		pcap_close(newconn->pcap);
 	free(newconn);
 	return NULL;
 }
