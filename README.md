@@ -16,10 +16,13 @@ This module of libvdeplug4 can be used in any program supporting vde like
 
 ## Install *vdeplug\_pcap*
 
-*vdeplug\_pcap* uses the auto-tools, so the standard procedure to compile and install the library is:
-```
-$ autoreconf -if
-$ ./configure
+*vdeplug\_pcap* uses cmake, so the standard procedure to build and install
+this vdeplug plugin module is the following:
+
+```sh
+$ mkdir build
+$ cd build
+$ cmake ..
 $ make
 $ sudo make install
 ```
