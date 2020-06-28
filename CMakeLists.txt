@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.1)
 project("vdeplug_pcap"
     DESCRIPTION "libvdeplug plugin module for pcap"
-    HOMEPAGE_URL "https://github.com/virtualsquare/vdeplug_pcap"
+    HOMEPAGE_URL "https://github.com/rd235/vdeplug_pcap"
     VERSION 0.1.0
     LANGUAGES C)
 
