@@ -35,10 +35,10 @@
 #include "libvdeplug_mod.h"
 #include <pcap.h>
 
-static VDECONN *vde_pcap_open(char *given_vde_url, char *descr,int interface_version,
+static VDECONN *vde_pcap_open(char *given_vde_url, char *descr, int interface_version,
 		struct vde_open_args *open_args);
-static ssize_t vde_pcap_recv(VDECONN *conn,void *buf,size_t len,int flags);
-static ssize_t vde_pcap_send(VDECONN *conn,const void *buf,size_t len,int flags);
+static ssize_t vde_pcap_recv(VDECONN *conn, void *buf, size_t len, int flags);
+static ssize_t vde_pcap_send(VDECONN *conn, const void *buf, size_t len, int flags);
 static int vde_pcap_datafd(VDECONN *conn);
 static int vde_pcap_ctlfd(VDECONN *conn);
 static int vde_pcap_close(VDECONN *conn);
@@ -62,10 +62,10 @@ struct vde_pcap_conn {
 
 static void gethwaddr(const char *ifname, char *hwaddr) {
 	int s;
-	int ioctlok;
+	int ioctlok = 0;
 	struct ifreq ifr;
-	strncpy(ifr.ifr_name, ifname, sizeof(ifr.ifr_name));
-	if ((s = socket(AF_INET, SOCK_DGRAM, 0)) > 0) {
+	snprintf(ifr.ifr_name, sizeof(ifr.ifr_name), "%s", ifname); 
+	if ((s = socket(AF_INET, SOCK_DGRAM, 0)) >= 0) {
 		ioctlok = ioctl(s, SIOCGIFHWADDR, &ifr);
 		close(s);
 	}
@@ -75,12 +75,15 @@ static void gethwaddr(const char *ifname, char *hwaddr) {
 		memcpy(hwaddr, &ifr.ifr_hwaddr.sa_data, ETH_ALEN);
 }
 
-static VDECONN *vde_pcap_open(char *given_vde_url, char *descr,int interface_version,
+static VDECONN *vde_pcap_open(char *given_vde_url, char *descr, int interface_version,
 		struct vde_open_args *open_args)
 {
+	(void) descr;
+	(void) interface_version;
+	(void) open_args;
 	struct vde_pcap_conn *newconn;
 	char *ifname = given_vde_url;
-	if ((newconn=calloc(1,sizeof(struct vde_pcap_conn)))==NULL) {
+	if ((newconn=calloc(1, sizeof(struct vde_pcap_conn)))==NULL) {
 		errno=ENOMEM;
 		return NULL;
 	}
@@ -120,8 +123,9 @@ abort:
 	return NULL;
 }
 
-static ssize_t vde_pcap_recv(VDECONN *conn,void *buf,size_t len,int flags)
+static ssize_t vde_pcap_recv(VDECONN *conn, void *buf, size_t len, int flags)
 {
+	(void) flags;
 	struct vde_pcap_conn *vde_conn = (struct vde_pcap_conn *)conn;
 	const u_char *data;
 	struct pcap_pkthdr hdr;
@@ -138,8 +142,9 @@ static ssize_t vde_pcap_recv(VDECONN *conn,void *buf,size_t len,int flags)
 		return 1;
 }
 
-static ssize_t vde_pcap_send(VDECONN *conn,const void *buf,size_t len,int flags)
+static ssize_t vde_pcap_send(VDECONN *conn, const void *buf, size_t len, int flags)
 {
+	(void) flags;
 	struct vde_pcap_conn *vde_conn = (struct vde_pcap_conn *)conn;
 	return pcap_inject(vde_conn->pcap, buf, len);
 }
@@ -152,6 +157,7 @@ static int vde_pcap_datafd(VDECONN *conn)
 
 static int vde_pcap_ctlfd(VDECONN *conn)
 {
+	(void) conn;
 	return -1;
 }
 
