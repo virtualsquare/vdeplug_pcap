@@ -1,6 +1,3 @@
-libvdeplug_pcap(1) -- vdeplug module for vde_switch based networks
-====
-
 <!--
 .\" Copyright (C) 2020 VirtualSquare. Project Leader: Renzo Davoli
 .\"
@@ -25,11 +22,14 @@ libvdeplug_pcap(1) -- vdeplug module for vde_switch based networks
 .\" MA 02110-1301 USA.
 .\"
 -->
+# NAME
 
-## SYNOPSIS
+`libvdeplug_pcap` -- vdeplug module for vde_switch based networks
+
+# SYNOPSIS
 libvdeplug_pcap.so
 
-## DESCRIPTION
+# DESCRIPTION
 
 This libvdeplug module interconnects a client to an interface using the packet capture library
 (pcap): all the data that is received by this plug is injected into interface and everything captured from that interface
@@ -47,7 +47,7 @@ The vde_plug_url syntax of this module is the following:
 
 :  `pcap://`*interface_name*
 
-## EXAMPLE
+# EXAMPLE
 
 ```
 vde_plug vde:// pcap://eth0
@@ -55,14 +55,14 @@ vde_plug vde:// pcap://eth0
 
 connects the standard vde_switch to the interface eth0.
 
-## NOTICE
+# NOTICE
 
 Virtual  Distributed  Ethernet  is not related in any way with www.vde.com ("Verband der Elektrotechnik, Elektronik
 und Informationstechnik" i.e. the German "Association for Electrical, Electronic & Information Technologies").
 
-## SEE ALSO
+# SEE ALSO
 `vde_plug`(1), `vdens`(1)
 
-## AUTHOR
+# AUTHOR
 VirtualSquare. Project leader: Renzo Davoli
 
